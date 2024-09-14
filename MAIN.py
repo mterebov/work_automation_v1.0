@@ -14,7 +14,6 @@ def date_protocool(date_range: str):
 
 def task_check(tasks: list, date_range: str):
     date_protocol, month, year = date_protocool(date_range)
-    print(month, year)
     while True:
         try:
             add_tasks = str(input(f'Добавить все задачи ТОЛЬКО из диапазона {date_range}? (y/n): '))
