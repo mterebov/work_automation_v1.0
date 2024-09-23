@@ -46,7 +46,7 @@ def filereader(path: str):
             print('Стандартный путь не найден (Выполненая работа.txt)')
             flag = True
             while flag:
-                path = str(input('Введите название файла с треком задач(.txt добавляется ): ')) + '.txt'
+                path = str(input('Введите название файла с треком задач(.txt добавляется автоматически): ')) + '.txt'
                 files = os.listdir()
                 if path in files:
                     print('Файл найден!')
@@ -55,9 +55,27 @@ def filereader(path: str):
                     print(f"Файл с именем '{path}' не найден")
 
 
-def filewriter(path: str, data: list):
+def filewriter(path: str, data: list, date_range: str, summury: str):
+    Hello_part = (f'Привет! Вот работа выполненная в период {date_range}\n'
+                  f'Работа выполненная в период {date_range}:\n'
+                  f'\n'
+                  f'\n'
+                  f'{60 * "-"}\n')
+    Goodbye_part = (f'\n{60 * "-"}'
+                    f'\n{summury}'
+                    f'\n'
+                    f'\n'
+                    f'\n'
+                    f'С уважением\n'
+                    f'Теребов Максим')
+    outdata = []
+    outdata.append(Hello_part)
+    for task in data:
+        outdata.append(str(task[0]) + (' ' * (120 - len(str(task[0])))) + ' | ' + str(task[1]) + ' | ' + str(task[2]))
+    outdata.append(Goodbye_part)
     with open(path, 'w', encoding='utf8') as f:
-        ...
+        for task in outdata:
+            f.write(task)
 
 
 def check_year(year: int):
@@ -99,7 +117,7 @@ def date_range():
             case 1:
                 date = str('01.') + str(month) + '.' + str(year) + ' - ' + str('15.') + str(month) + '.' + str(year)
                 while flag_2:
-                    match str(input(f'Это верная дата: {date},  (y/n)?')):
+                    match str(input(f'Это верная дата: {date}?  (y/n): ')):
                         case 'y':
                             return date
                         case 'n':
@@ -111,7 +129,7 @@ def date_range():
                 if check_year(year):
                     date = str('16.') + str(month) + '.' + str(year) + ' - ' + str(ves_year[str(int(month))]) + '.' + str(month) + '.' + str(year)
                     while flag_2:
-                        match str(input(f'Это верная дата: {date},  (y/n)?')):
+                        match str(input(f'Это верная дата: {date}?  (y/n): ')):
                             case 'y':
                                 return date
                             case 'n':
@@ -122,7 +140,7 @@ def date_range():
                 else:
                     date = str('16.') + str(month) + '.' + str(year) + ' - ' + str(unves_year[str(int(month))]) + '.' + str(month) + '.' + str(year)
                     while flag_2:
-                        match str(input(f'Это верная дата: {date},  (y/n)?')):
+                        match str(input(f'Это верная дата: {date}?  (y/n): ')):
                             case 'y':
                                 return date
                             case 'n':
@@ -132,5 +150,16 @@ def date_range():
                                 print('Попробуй еще раз (y/n)')
 
 
-'''print(date_range())'''
-print(task_check(filereader('Выполненая работа.txt'), date_range()))
+def summary(data: list):
+    summary = 0
+    for task in data:
+        if task[2][-3:] == 'час':
+            summary += float(task[2][:-4])
+        else:
+            summary += float(task[2][:-5])
+    return f'Итого: {summary} ({summary * 800})'
+
+
+date_range = date_range()
+tasks = task_check(filereader('Выполненая работа.txt'), date_range)
+filewriter(f'email {str(datetime.date.today())}.txt', tasks, date_range, summary(tasks))
