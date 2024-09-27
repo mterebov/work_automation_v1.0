@@ -2,34 +2,36 @@ import os
 import datetime
 
 
-def date_protocool(date_range: str):
-    date_start, date_finish = date_range.split(' - ')[0], date_range.split(' - ')[1]
+def date_protocool(dp_date_range: str):
+    date_start, date_finish = dp_date_range.split(' - ')[0], dp_date_range.split(' - ')[1]
     check_list = []
     n = int(date_start.split('.')[0])
     while n <= int(date_finish.split('.')[0]):
         check_list.append(n)
         n += 1
-    return check_list,int(date_start.split('.')[1]), int(date_start.split('.')[2])
+    return check_list, int(date_start.split('.')[1]), int(date_start.split('.')[2])
 
 
-def task_check(tasks: list, date_range: str):
-    date_protocol, month, year = date_protocool(date_range)
+def task_check(tc_tasks: list, tc_date_range: str):
+    date_protocol, month, year = date_protocool(tc_date_range)
     while True:
         try:
-            add_tasks = str(input(f'Добавить все задачи ТОЛЬКО из диапазона {date_range}? (y/n): '))
+            add_tasks = str(input(f'Добавить все задачи ТОЛЬКО из диапазона {tc_date_range}? (y/n): '))
             match add_tasks:
                 case 'y':
-                    raw_data = filereader('Выполненая работа.txt')
+                    raw_data = tc_tasks
                     well_data = []
                     buffer = []
                     for string in raw_data:
                         buffer.append(string.split(' | '))
-                    for unpuck_task in buffer:
-                        if int(unpuck_task[1].split('.')[0]) in date_protocol and (int(unpuck_task[1].split('.')[1]) == month) and (int(unpuck_task[1].split('.')[2]) == year):
-                            well_data.append(unpuck_task)
+                    for unpack_task in buffer:
+                        if (int(unpack_task[1].split('.')[0]) in date_protocol
+                                and (int(unpack_task[1].split('.')[1]) == month)
+                                and (int(unpack_task[1].split('.')[2]) == year)):
+                            well_data.append(unpack_task)
                     return well_data
                 case 'n':
-                    diap = str(input('Введите диапазон дат в формате "ДД.ММ.ГГГГ"'))
+                    '''diap = str(input('Введите диапазон дат в формате "ДД.ММ.ГГГГ"'))'''
                 case _:
                     ...
         except Exception as e:
@@ -43,6 +45,7 @@ def filereader(path: str):
                 data = f.readlines()
             return data
         except Exception as e:
+            print(e)
             print('Стандартный путь не найден (Выполненая работа.txt)')
             flag = True
             while flag:
@@ -55,25 +58,28 @@ def filereader(path: str):
                     print(f"Файл с именем '{path}' не найден")
 
 
-def filewriter(path: str, data: list, date_range: str, summury: str):
-    Hello_part = (f'Привет! Вот работа выполненная в период {date_range}\n'
-                  f'Работа выполненная в период {date_range}:\n'
+def filewriter(path: str, data: list, fw_date_range: str, fw_summary: str):
+    if "EMAIL" not in os.listdir():
+        os.makedirs('EMAIL')
+    hello_part = (f'Привет! Вот работа выполненная в период {fw_date_range}\n'
+                  f'Работа выполненная в период {fw_date_range}:\n'
                   f'\n'
                   f'\n'
                   f'{60 * "-"}\n')
-    Goodbye_part = (f'\n{60 * "-"}'
-                    f'\n{summury}'
+    goodbye_part = (f'\n{60 * "-"}'
+                    f'\n{fw_summary}'
                     f'\n'
                     f'\n'
                     f'\n'
                     f'С уважением\n'
                     f'Теребов Максим')
-    outdata = []
-    outdata.append(Hello_part)
+    outdata = [hello_part]
     for task in data:
         outdata.append(str(task[0]) + (' ' * (120 - len(str(task[0])))) + ' | ' + str(task[1]) + ' | ' + str(task[2]))
-    outdata.append(Goodbye_part)
-    with open(path, 'w', encoding='utf8') as f:
+    if outdata[-1][-1] == "\n":
+        outdata[-1] = str(outdata[-1])[:-2]
+    outdata.append(goodbye_part)
+    with open("EMAIL/" + path, 'w', encoding='utf8') as f:
         for task in outdata:
             f.write(task)
 
@@ -103,7 +109,7 @@ def date_range():
             try:
                 year = int(input('Год отчета: '))
                 month = int(input('Месяц отчета: '))
-                half = int(input('1 или 2 половина месяца: '))
+                half = int(input('1 или 2 половина месяца (для выбора всего месяца введите "12"): '))
                 if (year >= 2024) and (12 >= month > 0) and (half == 1 or 2):
                     if month < 10:
                         month = '0' + str(month)
@@ -127,7 +133,8 @@ def date_range():
                             print('Попробуй еще раз (y/n)')
             case 2:
                 if check_year(year):
-                    date = str('16.') + str(month) + '.' + str(year) + ' - ' + str(ves_year[str(int(month))]) + '.' + str(month) + '.' + str(year)
+                    date = (str('16.') + str(month) + '.' + str(year) + ' - ' + str(ves_year[str(int(month))]) + '.' +
+                            str(month) + '.' + str(year))
                     while flag_2:
                         match str(input(f'Это верная дата: {date}?  (y/n): ')):
                             case 'y':
@@ -138,7 +145,33 @@ def date_range():
                             case _:
                                 print('Попробуй еще раз (y/n)')
                 else:
-                    date = str('16.') + str(month) + '.' + str(year) + ' - ' + str(unves_year[str(int(month))]) + '.' + str(month) + '.' + str(year)
+                    date = (str('16.') + str(month) + '.' + str(year) + ' - ' + str(unves_year[str(int(month))]) + '.' +
+                            str(month) + '.' + str(year))
+                    while flag_2:
+                        match str(input(f'Это верная дата: {date}?  (y/n): ')):
+                            case 'y':
+                                return date
+                            case 'n':
+                                print('Повторите ввод даты')
+                                flag_2 = False
+                            case _:
+                                print('Попробуй еще раз (y/n)')
+            case 12:
+                if check_year(year):
+                    date = (str('01.') + str(month) + '.' + str(year) + ' - ' + str(ves_year[str(int(month))]) + '.' +
+                            str(month) + '.' + str(year))
+                    while flag_2:
+                        match str(input(f'Это верная дата: {date}?  (y/n): ')):
+                            case 'y':
+                                return date
+                            case 'n':
+                                print('Повторите ввод даты')
+                                flag_2 = False
+                            case _:
+                                print('Попробуй еще раз (y/n)')
+                else:
+                    date = (str('01.') + str(month) + '.' + str(year) + ' - ' + str(unves_year[str(int(month))]) + '.' +
+                            str(month) + '.' + str(year))
                     while flag_2:
                         match str(input(f'Это верная дата: {date}?  (y/n): ')):
                             case 'y':
@@ -151,13 +184,13 @@ def date_range():
 
 
 def summary(data: list):
-    summary = 0
+    orig_summary = 0
     for task in data:
         if task[2][-3:] == 'час':
-            summary += float(task[2][:-4])
+            orig_summary += float(task[2][:-4])
         else:
-            summary += float(task[2][:-5])
-    return f'Итого: {summary} ({summary * 800})'
+            orig_summary += float(task[2][:-5])
+    return f'Итого: {orig_summary} ({orig_summary * 800})'
 
 
 date_range = date_range()
