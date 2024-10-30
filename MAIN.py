@@ -32,6 +32,7 @@ def task_check(tc_tasks: list, tc_date_range: str):
                     return well_data
                 case 'n':
                     '''diap = str(input('Введите диапазон дат в формате "ДД.ММ.ГГГГ"'))'''
+                    print('пока что не готово')
                 case _:
                     ...
         except Exception as e:
@@ -193,6 +194,6 @@ def summary(data: list):
     return f'Итого: {orig_summary} ({orig_summary * 800})'
 
 
-date_range = date_range()
+'''date_range = date_range()
 tasks = task_check(filereader('Выполненая работа.txt'), date_range)
-filewriter(f'email {str(datetime.date.today())}.txt', tasks, date_range, summary(tasks))
+filewriter(f'email {str(datetime.date.today())}.txt', tasks, date_range, summary(tasks))'''
