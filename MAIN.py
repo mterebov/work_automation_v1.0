@@ -16,25 +16,17 @@ def task_check(tc_tasks: list, tc_date_range: str):
     date_protocol, month, year = date_protocool(tc_date_range)
     while True:
         try:
-            add_tasks = str(input(f'Добавить все задачи ТОЛЬКО из диапазона {tc_date_range}? (y/n): '))
-            match add_tasks:
-                case 'y':
-                    raw_data = tc_tasks
-                    well_data = []
-                    buffer = []
-                    for string in raw_data:
-                        buffer.append(string.split(' | '))
-                    for unpack_task in buffer:
-                        if (int(unpack_task[1].split('.')[0]) in date_protocol
-                                and (int(unpack_task[1].split('.')[1]) == month)
-                                and (int(unpack_task[1].split('.')[2]) == year)):
-                            well_data.append(unpack_task)
-                    return well_data
-                case 'n':
-                    '''diap = str(input('Введите диапазон дат в формате "ДД.ММ.ГГГГ"'))'''
-                    print('пока что не готово')
-                case _:
-                    ...
+            raw_data = tc_tasks
+            well_data = []
+            buffer = []
+            for string in raw_data:
+                buffer.append(string.split(' | '))
+            for unpack_task in buffer:
+                if (int(unpack_task[1].split('.')[0]) in date_protocol
+                        and (int(unpack_task[1].split('.')[1]) == month)
+                        and (int(unpack_task[1].split('.')[2]) == year)):
+                    well_data.append(unpack_task)
+            return well_data
         except Exception as e:
             print(f'Что-то пошло не так, ошибка: {e}')
 
@@ -196,4 +188,6 @@ def summary(data: list):
 
 '''date_range = date_range()
 tasks = task_check(filereader('Выполненая работа.txt'), date_range)
-filewriter(f'email {str(datetime.date.today())}.txt', tasks, date_range, summary(tasks))'''
+filewriter(f'email {str(datetime.date.today())}.txt', tasks, date_range, summary(tasks))
+print(tasks)'''
+print(date_protocool("01.09.2024 - 30.09.2024"))
